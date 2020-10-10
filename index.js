@@ -3,6 +3,11 @@
 function format_cep(elm)
 {   
     elm.value = elm.value.replace(/D/g,"").replace(/^(\d{5})(\d)/,"$1-$2").substring(0, 9);
+
+    if(elm.value.length == 9)
+    {
+        pesquisacep(elm.value)
+    }
 }
 
 /* Codigo do viaCep */
@@ -35,8 +40,8 @@ function pesquisacep(valor) {
     var cep = valor.replace(/\D/g, '');
 
     //Verifica se campo cep possui valor informado.
-    if (cep != "") {
-
+    if (cep != "")
+    {
         //Expressão regular para validar o CEP.
         var validacep = /^[0-9]{8}$/;
 
@@ -71,3 +76,62 @@ function pesquisacep(valor) {
     }
 };
 
+function busca_produtos(busca)
+{
+    var div     = document.getElementById('div_busca_prod');
+    let error_msg = "<li style='color: red'>Nenhum Produto Encontrado</li>";
+    if(busca)
+    {   
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200)
+            {
+                if((retorno = this.responseText) != 0)
+                {
+                    div.innerHTML = retorno;
+                }
+                else
+                {
+                    div.innerHTML = error_msg;
+                }
+            }
+        };
+
+        xmlhttp.open("GET", "ajax/buscar_produtos.php?busca=" + busca);
+        xmlhttp.send();
+    }
+    else
+    {
+        div.innerHTML = error_msg;
+    }
+}
+
+function insere_produtos()
+{
+    var div_prod = document.getElementById('div_produtos');
+    let elm     = document.querySelectorAll("input[name='id_produtos_add[]']");
+
+    if(elm)
+    {
+        ids_prod = '';
+        elm.forEach(element => {
+            if(element.checked)
+            {
+                ids_prod += element.value + ', ';
+            }
+        });
+
+        if(ids_prod.size() > 0)
+        {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200)
+                {
+
+                }
+            xmlhttp.open("GET", "ajax/carrega_produtos.php?ids_prod=" + ids_prod);
+            xmlhttp.send();
+        }
+    }
+
+}
